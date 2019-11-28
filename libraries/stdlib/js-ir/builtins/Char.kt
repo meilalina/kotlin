@@ -52,7 +52,7 @@ public data class Char internal constructor(val value: Int) : Comparable<Char> {
     /** Returns the value of this character as a `Double`. */
     public fun toDouble(): Double = value.toDouble()
 
-    override fun toString(): String {
+    public override fun toString(): String {
         return js("String").fromCharCode(value).unsafeCast<String>()
     }
 
