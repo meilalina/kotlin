@@ -5,6 +5,7 @@
 
 package org.jetbrains.kotlin.ir.backend.js
 
+import org.jetbrains.kotlin.backend.common.ir.isMemberOfOpenClass
 import org.jetbrains.kotlin.ir.IrElement
 import org.jetbrains.kotlin.ir.backend.js.export.isExported
 import org.jetbrains.kotlin.ir.backend.js.utils.getJsName
@@ -105,31 +106,70 @@ fun usefulDeclarations(roots: Iterable<IrDeclaration>, context: JsIrBackendConte
 
     val queue = ArrayDeque<IrDeclaration>()
     val result = hashSetOf<IrDeclaration>()
+    // This collection contains declarations whose reachability should be propagated to overrides.
+    // The collection must be a subset of [result] set.
+    val contagiousReachableDeclarations = hashSetOf<IrOverridableDeclaration<*>>()
     val constructedClasses = hashSetOf<IrClass>()
 
     fun IrDeclaration.enqueue(
         from: IrDeclaration?,
         description: String?,
+        isContagious: Boolean = true,
         altFromFqn: String? = null
     ) {
-        if (this is IrProperty && !this.isExternal ||
-            this in result
-        ) {
-            return
-        }
+        // Ignore non-external IrProperty because we don't want to generate code for them and codegen doesn't support it.
+        if (this is IrProperty && !this.isExternal) return
+
+        /*
+        r - add to result and queue
+        c - add to contagiousReachableDeclarations
+        _ - do nothing
+        i - illegal state
+
+        isContagious && this is IrOverridableDeclaration<*>
+        | this in contagiousReachableDeclarations
+        | | this in result
+        | | |
+        0 0 0 -> r    => 4
+        0 0 1 -> _    => 5
+        0 1 0 -> i    => (4')
+        0 1 1 -> _    => 5
+        1 0 0 -> r, c => 1 2
+        1 0 1 -> c    => 1 (-2)
+        1 1 0 -> i    => (3')
+        1 1 1 -> _    => 3
+        */
+
+        // TODO check that this is overridable
+        // it requires fixing how functions with default arguments is handled
+        val isContagiousOverridableDeclaration = isContagious && this is IrOverridableDeclaration<*> && this.isMemberOfOpenClass
 
         if (printReachabilityInfo) {
             val fromFqn = (from as? IrDeclarationWithName)?.fqNameWhenAvailable?.asString() ?: altFromFqn ?: "<unknown>"
-
             val toFqn = (this as? IrDeclarationWithName)?.fqNameWhenAvailable?.asString() ?: "<unknown>"
 
-            val v = "\"$fromFqn\" -> \"$toFqn\"" + (if (description.isNullOrBlank()) "" else " // $description")
+            val comment = (description ?: "") + (if (isContagiousOverridableDeclaration) "[CONTAGIOUS!]" else "")
+            val v = "\"$fromFqn\" -> \"$toFqn\"" + (if (comment.isBlank()) "" else " // $comment")
 
             reachabilityInfo.add(v)
         }
 
-        result.add(this)
-        queue.addLast(this)
+        if (isContagiousOverridableDeclaration) {
+            if (this !in contagiousReachableDeclarations) { // (1)
+                if (this !in result) { // (2)
+                    result.add(this)
+                    queue.addLast(this)
+                }
+                contagiousReachableDeclarations.add(this as IrOverridableDeclaration<*>)
+            }
+            // else (3)
+        } else {
+            if (this !in result) { // (4)
+                result.add(this)
+                queue.addLast(this)
+            }
+            // else (5)
+        }
     }
 
     // use withInitialIr to avoid ConcurrentModificationException in dce-driven lowering when adding roots' nested declarations (members)
@@ -175,8 +215,8 @@ fun usefulDeclarations(roots: Iterable<IrDeclaration>, context: JsIrBackendConte
             // TODO remove?
             stageController.lazyLower(declaration)
 
-            fun IrDeclaration.enqueue(description: String) {
-                enqueue(declaration, description)
+            fun IrDeclaration.enqueue(description: String, isContagious: Boolean = true) {
+                enqueue(declaration, description, isContagious)
             }
 
             if (declaration is IrClass) {
@@ -186,7 +226,7 @@ fun usefulDeclarations(roots: Iterable<IrDeclaration>, context: JsIrBackendConte
 
                 // TODO find out how `doResume` gets removed
                 if (declaration.symbol == context.ir.symbols.coroutineImpl) {
-                    declaration.declarations.forEach {
+                    declaration.declarations.toList().forEach {
                         if (it is IrSimpleFunction && it.name.asString() == "doResume") {
                             it.enqueue("hack for CoroutineImpl::doResume")
                         }
@@ -195,7 +235,7 @@ fun usefulDeclarations(roots: Iterable<IrDeclaration>, context: JsIrBackendConte
             }
 
             if (declaration is IrSimpleFunction && declaration.isFakeOverride) {
-                declaration.resolveFakeOverride()?.enqueue("real overridden fun")
+                declaration.resolveFakeOverride()?.enqueue("real overridden fun", isContagious = false)
             }
 
             // Collect instantiated classes.
@@ -285,7 +325,7 @@ fun usefulDeclarations(roots: Iterable<IrDeclaration>, context: JsIrBackendConte
             for (overriddenSymbol in this.overriddenSymbols) {
                 val overriddenDeclaration = overriddenSymbol.owner as? IrOverridableDeclaration<*> ?: continue
 
-                if (overriddenDeclaration in result) return overriddenDeclaration
+                if (overriddenDeclaration in contagiousReachableDeclarations) return overriddenDeclaration
 
                 overriddenDeclaration.findOverriddenUsefulDeclaration()?.let {
                     return it
