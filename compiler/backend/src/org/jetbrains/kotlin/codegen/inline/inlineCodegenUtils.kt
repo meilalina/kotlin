@@ -11,6 +11,7 @@ import org.jetbrains.kotlin.codegen.ASSERTIONS_DISABLED_FIELD_NAME
 import org.jetbrains.kotlin.codegen.AsmUtil
 import org.jetbrains.kotlin.codegen.BaseExpressionCodegen
 import org.jetbrains.kotlin.codegen.MemberCodegen
+import org.jetbrains.kotlin.codegen.TransformationMethodVisitor
 import org.jetbrains.kotlin.codegen.SamWrapperCodegen.SAM_WRAPPER_SUFFIX
 import org.jetbrains.kotlin.codegen.`when`.WhenByEnumsMapping
 import org.jetbrains.kotlin.codegen.binding.CodegenBinding
@@ -309,6 +310,22 @@ internal fun firstLabelInChain(node: LabelNode): LabelNode {
     }
     return curNode
 }
+
+internal val MethodVisitor.bytecode: String?
+    get() {
+        var mv: MethodVisitor? = this
+        if (mv is TransformationMethodVisitor) {
+            mv = mv.traceMethodVisitorIfPossible
+        }
+        if (mv is TraceMethodVisitor) {
+            val sw = StringWriter()
+            val pw = PrintWriter(sw)
+            mv.p.print(pw)
+            pw.close()
+            return sw.toString()
+        }
+        return null
+    }
 
 internal val MethodNode?.nodeText: String
     get() {
