@@ -7,6 +7,7 @@ package org.jetbrains.kotlin.fir.resolve.calls
 
 import org.jetbrains.kotlin.fir.FirSession
 import org.jetbrains.kotlin.fir.declarations.FirFile
+import org.jetbrains.kotlin.fir.declarations.FirTypeParameter
 import org.jetbrains.kotlin.fir.declarations.FirValueParameter
 import org.jetbrains.kotlin.fir.expressions.FirExpression
 import org.jetbrains.kotlin.fir.expressions.impl.FirNoReceiverExpression
@@ -102,6 +103,7 @@ class Candidate(
     var usesSAM: Boolean = false
 
     var argumentMapping: Map<FirExpression, FirValueParameter>? = null
+    lateinit var typeArgumentMapping: TypeArgumentMapping
     val postponedAtoms = mutableListOf<PostponedResolvedAtomMarker>()
 
     val diagnostics: MutableList<ResolutionDiagnostic> = mutableListOf()
