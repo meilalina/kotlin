@@ -1,4 +1,6 @@
 // IGNORE_BACKEND: NATIVE
+// No Runnable
+// IGNORE_BACKEND: JS, JS_IR
 // FILE: 1.kt
 // WITH_RUNTIME
 package test

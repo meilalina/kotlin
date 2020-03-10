@@ -1,4 +1,5 @@
 // IGNORE_BACKEND: NATIVE
+// IGNORE_BACKEND: JS, JS_IR
 // FILE: 1.kt
 package test
 
