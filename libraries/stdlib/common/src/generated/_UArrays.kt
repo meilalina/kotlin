@@ -5735,7 +5735,7 @@ public inline fun UShortArray.reduceIndexed(operation: (index: Int, acc: UShort,
  * 
  * @sample samples.collections.Collections.Aggregates.reduceOrNull
  */
-@SinceKotlin("1.3")
+@SinceKotlin("1.4")
 @ExperimentalUnsignedTypes
 @kotlin.internal.InlineOnly
 public inline fun UIntArray.reduceIndexedOrNull(operation: (index: Int, acc: UInt, UInt) -> UInt): UInt? {
@@ -5757,7 +5757,7 @@ public inline fun UIntArray.reduceIndexedOrNull(operation: (index: Int, acc: UIn
  * 
  * @sample samples.collections.Collections.Aggregates.reduceOrNull
  */
-@SinceKotlin("1.3")
+@SinceKotlin("1.4")
 @ExperimentalUnsignedTypes
 @kotlin.internal.InlineOnly
 public inline fun ULongArray.reduceIndexedOrNull(operation: (index: Int, acc: ULong, ULong) -> ULong): ULong? {
@@ -5779,7 +5779,7 @@ public inline fun ULongArray.reduceIndexedOrNull(operation: (index: Int, acc: UL
  * 
  * @sample samples.collections.Collections.Aggregates.reduceOrNull
  */
-@SinceKotlin("1.3")
+@SinceKotlin("1.4")
 @ExperimentalUnsignedTypes
 @kotlin.internal.InlineOnly
 public inline fun UByteArray.reduceIndexedOrNull(operation: (index: Int, acc: UByte, UByte) -> UByte): UByte? {
@@ -5801,7 +5801,7 @@ public inline fun UByteArray.reduceIndexedOrNull(operation: (index: Int, acc: UB
  * 
  * @sample samples.collections.Collections.Aggregates.reduceOrNull
  */
-@SinceKotlin("1.3")
+@SinceKotlin("1.4")
 @ExperimentalUnsignedTypes
 @kotlin.internal.InlineOnly
 public inline fun UShortArray.reduceIndexedOrNull(operation: (index: Int, acc: UShort, UShort) -> UShort): UShort? {
@@ -6059,7 +6059,7 @@ public inline fun UShortArray.reduceRightIndexed(operation: (index: Int, UShort,
  * 
  * @sample samples.collections.Collections.Aggregates.reduceRightOrNull
  */
-@SinceKotlin("1.3")
+@SinceKotlin("1.4")
 @ExperimentalUnsignedTypes
 @kotlin.internal.InlineOnly
 public inline fun UIntArray.reduceRightIndexedOrNull(operation: (index: Int, UInt, acc: UInt) -> UInt): UInt? {
@@ -6082,7 +6082,7 @@ public inline fun UIntArray.reduceRightIndexedOrNull(operation: (index: Int, UIn
  * 
  * @sample samples.collections.Collections.Aggregates.reduceRightOrNull
  */
-@SinceKotlin("1.3")
+@SinceKotlin("1.4")
 @ExperimentalUnsignedTypes
 @kotlin.internal.InlineOnly
 public inline fun ULongArray.reduceRightIndexedOrNull(operation: (index: Int, ULong, acc: ULong) -> ULong): ULong? {
@@ -6105,7 +6105,7 @@ public inline fun ULongArray.reduceRightIndexedOrNull(operation: (index: Int, UL
  * 
  * @sample samples.collections.Collections.Aggregates.reduceRightOrNull
  */
-@SinceKotlin("1.3")
+@SinceKotlin("1.4")
 @ExperimentalUnsignedTypes
 @kotlin.internal.InlineOnly
 public inline fun UByteArray.reduceRightIndexedOrNull(operation: (index: Int, UByte, acc: UByte) -> UByte): UByte? {
@@ -6128,7 +6128,7 @@ public inline fun UByteArray.reduceRightIndexedOrNull(operation: (index: Int, UB
  * 
  * @sample samples.collections.Collections.Aggregates.reduceRightOrNull
  */
-@SinceKotlin("1.3")
+@SinceKotlin("1.4")
 @ExperimentalUnsignedTypes
 @kotlin.internal.InlineOnly
 public inline fun UShortArray.reduceRightIndexedOrNull(operation: (index: Int, UShort, acc: UShort) -> UShort): UShort? {

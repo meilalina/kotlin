@@ -1399,6 +1399,7 @@ public inline fun <S, T : S> Sequence<T>.reduceIndexed(operation: (index: Int, a
  * 
  * @sample samples.collections.Collections.Aggregates.reduceOrNull
  */
+@SinceKotlin("1.4")
 public inline fun <S, T : S> Sequence<T>.reduceIndexedOrNull(operation: (index: Int, acc: S, T) -> S): S? {
     val iterator = this.iterator()
     if (!iterator.hasNext()) return null

@@ -1229,6 +1229,7 @@ public inline fun CharSequence.reduceIndexed(operation: (index: Int, acc: Char, 
  * 
  * @sample samples.collections.Collections.Aggregates.reduceOrNull
  */
+@SinceKotlin("1.4")
 public inline fun CharSequence.reduceIndexedOrNull(operation: (index: Int, acc: Char, Char) -> Char): Char? {
     if (isEmpty())
         return null
@@ -1299,6 +1300,7 @@ public inline fun CharSequence.reduceRightIndexed(operation: (index: Int, Char, 
  * 
  * @sample samples.collections.Collections.Aggregates.reduceRightOrNull
  */
+@SinceKotlin("1.4")
 public inline fun CharSequence.reduceRightIndexedOrNull(operation: (index: Int, Char, acc: Char) -> Char): Char? {
     var index = lastIndex
     if (index < 0) return null

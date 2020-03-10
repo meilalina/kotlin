@@ -1902,6 +1902,7 @@ public inline fun <S, T : S> Iterable<T>.reduceIndexed(operation: (index: Int, a
  * 
  * @sample samples.collections.Collections.Aggregates.reduceOrNull
  */
+@SinceKotlin("1.4")
 public inline fun <S, T : S> Iterable<T>.reduceIndexedOrNull(operation: (index: Int, acc: S, T) -> S): S? {
     val iterator = this.iterator()
     if (!iterator.hasNext()) return null
@@ -1975,6 +1976,7 @@ public inline fun <S, T : S> List<T>.reduceRightIndexed(operation: (index: Int, 
  * 
  * @sample samples.collections.Collections.Aggregates.reduceRightOrNull
  */
+@SinceKotlin("1.4")
 public inline fun <S, T : S> List<T>.reduceRightIndexedOrNull(operation: (index: Int, T, acc: S) -> S): S? {
     val iterator = listIterator(size)
     if (!iterator.hasPrevious())

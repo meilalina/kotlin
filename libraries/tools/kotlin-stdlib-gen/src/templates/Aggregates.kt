@@ -711,6 +711,7 @@ object Aggregates : TemplateGroupBase() {
     val f_reduceIndexedOrNull = fn("reduceIndexedOrNull(operation: (index: Int, acc: T, T) -> T)") {
         include(ArraysOfPrimitives, ArraysOfUnsigned, CharSequences)
     } builder {
+        since("1.4")
         inline()
         specialFor(ArraysOfUnsigned) { inlineOnly() }
 
@@ -742,6 +743,7 @@ object Aggregates : TemplateGroupBase() {
     val f_reduceIndexedOrNullSuper = fn("reduceIndexedOrNull(operation: (index: Int, acc: S, T) -> S)") {
         include(ArraysOfObjects, Iterables, Sequences)
     } builder {
+        since("1.4")
         inline()
 
         doc {
@@ -868,6 +870,7 @@ object Aggregates : TemplateGroupBase() {
     val f_reduceRightIndexedOrNull = fn("reduceRightIndexedOrNull(operation: (index: Int, T, acc: T) -> T)") {
         include(CharSequences, ArraysOfPrimitives, ArraysOfUnsigned)
     } builder {
+        since("1.4")
         inline()
         specialFor(ArraysOfUnsigned) { inlineOnly() }
 
@@ -901,6 +904,7 @@ object Aggregates : TemplateGroupBase() {
     val f_reduceRightIndexedOrNullSuper = fn("reduceRightIndexedOrNull(operation: (index: Int, T, acc: S) -> S)") {
         include(Lists, ArraysOfObjects)
     } builder {
+        since("1.4")
         inline()
 
         doc {

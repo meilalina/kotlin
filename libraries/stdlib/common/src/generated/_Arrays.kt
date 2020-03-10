@@ -12967,6 +12967,7 @@ public inline fun CharArray.reduceIndexed(operation: (index: Int, acc: Char, Cha
  * 
  * @sample samples.collections.Collections.Aggregates.reduceOrNull
  */
+@SinceKotlin("1.4")
 public inline fun <S, T : S> Array<out T>.reduceIndexedOrNull(operation: (index: Int, acc: S, T) -> S): S? {
     if (isEmpty())
         return null
@@ -12986,6 +12987,7 @@ public inline fun <S, T : S> Array<out T>.reduceIndexedOrNull(operation: (index:
  * 
  * @sample samples.collections.Collections.Aggregates.reduceOrNull
  */
+@SinceKotlin("1.4")
 public inline fun ByteArray.reduceIndexedOrNull(operation: (index: Int, acc: Byte, Byte) -> Byte): Byte? {
     if (isEmpty())
         return null
@@ -13005,6 +13007,7 @@ public inline fun ByteArray.reduceIndexedOrNull(operation: (index: Int, acc: Byt
  * 
  * @sample samples.collections.Collections.Aggregates.reduceOrNull
  */
+@SinceKotlin("1.4")
 public inline fun ShortArray.reduceIndexedOrNull(operation: (index: Int, acc: Short, Short) -> Short): Short? {
     if (isEmpty())
         return null
@@ -13024,6 +13027,7 @@ public inline fun ShortArray.reduceIndexedOrNull(operation: (index: Int, acc: Sh
  * 
  * @sample samples.collections.Collections.Aggregates.reduceOrNull
  */
+@SinceKotlin("1.4")
 public inline fun IntArray.reduceIndexedOrNull(operation: (index: Int, acc: Int, Int) -> Int): Int? {
     if (isEmpty())
         return null
@@ -13043,6 +13047,7 @@ public inline fun IntArray.reduceIndexedOrNull(operation: (index: Int, acc: Int,
  * 
  * @sample samples.collections.Collections.Aggregates.reduceOrNull
  */
+@SinceKotlin("1.4")
 public inline fun LongArray.reduceIndexedOrNull(operation: (index: Int, acc: Long, Long) -> Long): Long? {
     if (isEmpty())
         return null
@@ -13062,6 +13067,7 @@ public inline fun LongArray.reduceIndexedOrNull(operation: (index: Int, acc: Lon
  * 
  * @sample samples.collections.Collections.Aggregates.reduceOrNull
  */
+@SinceKotlin("1.4")
 public inline fun FloatArray.reduceIndexedOrNull(operation: (index: Int, acc: Float, Float) -> Float): Float? {
     if (isEmpty())
         return null
@@ -13081,6 +13087,7 @@ public inline fun FloatArray.reduceIndexedOrNull(operation: (index: Int, acc: Fl
  * 
  * @sample samples.collections.Collections.Aggregates.reduceOrNull
  */
+@SinceKotlin("1.4")
 public inline fun DoubleArray.reduceIndexedOrNull(operation: (index: Int, acc: Double, Double) -> Double): Double? {
     if (isEmpty())
         return null
@@ -13100,6 +13107,7 @@ public inline fun DoubleArray.reduceIndexedOrNull(operation: (index: Int, acc: D
  * 
  * @sample samples.collections.Collections.Aggregates.reduceOrNull
  */
+@SinceKotlin("1.4")
 public inline fun BooleanArray.reduceIndexedOrNull(operation: (index: Int, acc: Boolean, Boolean) -> Boolean): Boolean? {
     if (isEmpty())
         return null
@@ -13119,6 +13127,7 @@ public inline fun BooleanArray.reduceIndexedOrNull(operation: (index: Int, acc: 
  * 
  * @sample samples.collections.Collections.Aggregates.reduceOrNull
  */
+@SinceKotlin("1.4")
 public inline fun CharArray.reduceIndexedOrNull(operation: (index: Int, acc: Char, Char) -> Char): Char? {
     if (isEmpty())
         return null
@@ -13597,6 +13606,7 @@ public inline fun CharArray.reduceRightIndexed(operation: (index: Int, Char, acc
  * 
  * @sample samples.collections.Collections.Aggregates.reduceRightOrNull
  */
+@SinceKotlin("1.4")
 public inline fun <S, T : S> Array<out T>.reduceRightIndexedOrNull(operation: (index: Int, T, acc: S) -> S): S? {
     var index = lastIndex
     if (index < 0) return null
@@ -13617,6 +13627,7 @@ public inline fun <S, T : S> Array<out T>.reduceRightIndexedOrNull(operation: (i
  * 
  * @sample samples.collections.Collections.Aggregates.reduceRightOrNull
  */
+@SinceKotlin("1.4")
 public inline fun ByteArray.reduceRightIndexedOrNull(operation: (index: Int, Byte, acc: Byte) -> Byte): Byte? {
     var index = lastIndex
     if (index < 0) return null
@@ -13637,6 +13648,7 @@ public inline fun ByteArray.reduceRightIndexedOrNull(operation: (index: Int, Byt
  * 
  * @sample samples.collections.Collections.Aggregates.reduceRightOrNull
  */
+@SinceKotlin("1.4")
 public inline fun ShortArray.reduceRightIndexedOrNull(operation: (index: Int, Short, acc: Short) -> Short): Short? {
     var index = lastIndex
     if (index < 0) return null
@@ -13657,6 +13669,7 @@ public inline fun ShortArray.reduceRightIndexedOrNull(operation: (index: Int, Sh
  * 
  * @sample samples.collections.Collections.Aggregates.reduceRightOrNull
  */
+@SinceKotlin("1.4")
 public inline fun IntArray.reduceRightIndexedOrNull(operation: (index: Int, Int, acc: Int) -> Int): Int? {
     var index = lastIndex
     if (index < 0) return null
@@ -13677,6 +13690,7 @@ public inline fun IntArray.reduceRightIndexedOrNull(operation: (index: Int, Int,
  * 
  * @sample samples.collections.Collections.Aggregates.reduceRightOrNull
  */
+@SinceKotlin("1.4")
 public inline fun LongArray.reduceRightIndexedOrNull(operation: (index: Int, Long, acc: Long) -> Long): Long? {
     var index = lastIndex
     if (index < 0) return null
@@ -13697,6 +13711,7 @@ public inline fun LongArray.reduceRightIndexedOrNull(operation: (index: Int, Lon
  * 
  * @sample samples.collections.Collections.Aggregates.reduceRightOrNull
  */
+@SinceKotlin("1.4")
 public inline fun FloatArray.reduceRightIndexedOrNull(operation: (index: Int, Float, acc: Float) -> Float): Float? {
     var index = lastIndex
     if (index < 0) return null
@@ -13717,6 +13732,7 @@ public inline fun FloatArray.reduceRightIndexedOrNull(operation: (index: Int, Fl
  * 
  * @sample samples.collections.Collections.Aggregates.reduceRightOrNull
  */
+@SinceKotlin("1.4")
 public inline fun DoubleArray.reduceRightIndexedOrNull(operation: (index: Int, Double, acc: Double) -> Double): Double? {
     var index = lastIndex
     if (index < 0) return null
@@ -13737,6 +13753,7 @@ public inline fun DoubleArray.reduceRightIndexedOrNull(operation: (index: Int, D
  * 
  * @sample samples.collections.Collections.Aggregates.reduceRightOrNull
  */
+@SinceKotlin("1.4")
 public inline fun BooleanArray.reduceRightIndexedOrNull(operation: (index: Int, Boolean, acc: Boolean) -> Boolean): Boolean? {
     var index = lastIndex
     if (index < 0) return null
@@ -13757,6 +13774,7 @@ public inline fun BooleanArray.reduceRightIndexedOrNull(operation: (index: Int, 
  * 
  * @sample samples.collections.Collections.Aggregates.reduceRightOrNull
  */
+@SinceKotlin("1.4")
 public inline fun CharArray.reduceRightIndexedOrNull(operation: (index: Int, Char, acc: Char) -> Char): Char? {
     var index = lastIndex
     if (index < 0) return null
