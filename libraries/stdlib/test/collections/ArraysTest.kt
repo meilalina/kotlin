@@ -1242,81 +1242,77 @@ class ArraysTest {
     }
 
     @Test fun associateWithPrimitives() {
-        expect(
+        assertEquals(
             mapOf(1 to "1", 2 to "2", 3 to "3"),
-            { intArrayOf(1, 2, 3).associateWith { it.toString() } }
+            intArrayOf(1, 2, 3).associateWith { it.toString() }
         )
-        expect(
+        assertEquals(
             mapOf(1.toByte() to "1", 2.toByte() to "2", 3.toByte() to "3"),
-            { byteArrayOf(1, 2, 3).associateWith { it.toString() } }
+            byteArrayOf(1, 2, 3).associateWith { it.toString() }
         )
-        expect(
+        assertEquals(
             mapOf(1.toShort() to "1", 2.toShort() to "2", 3.toShort() to "3"),
-            { shortArrayOf(1, 2, 3).associateWith { it.toString() } }
+            shortArrayOf(1, 2, 3).associateWith { it.toString() }
         )
-        expect(
+        assertEquals(
             mapOf(1L to "1", 2L to "2", 3L to "3"),
-            { longArrayOf(1, 2, 3).associateWith { it.toString() } }
+            longArrayOf(1, 2, 3).associateWith { it.toString() }
         )
-        expect(
+        assertEquals(
             mapOf(1f to "1", 2f to "2", 3f to "3"),
-            { floatArrayOf(1f, 2f, 3f).associateWith { if (it == 1f) "1" else if (it == 2f) "2" else "3" } }
+            floatArrayOf(1f, 2f, 3f).associateWith { if (it == 1f) "1" else if (it == 2f) "2" else "3" }
         )
-        expect(
+        assertEquals(
             mapOf(1.0 to "1", 2.0 to "2", 3.0 to "3"),
-            { doubleArrayOf(1.0, 2.0, 3.0).associateWith { if (it == 1.0) "1" else if (it == 2.0) "2" else "3" } }
+            doubleArrayOf(1.0, 2.0, 3.0).associateWith { if (it == 1.0) "1" else if (it == 2.0) "2" else "3" }
         )
-        expect(
+        assertEquals(
             mapOf('1' to "1", '2' to "2", '3' to "3"),
-            { charArrayOf('1', '2', '3').associateWith { it.toString() } }
+            charArrayOf('1', '2', '3').associateWith { it.toString() }
         )
-        expect(
+        assertEquals(
             mapOf(false to "false", true to "true"),
-            { booleanArrayOf(false, true).associateWith { it.toString() } }
+            booleanArrayOf(false, true).associateWith { it.toString() }
         )
     }
 
     @Test fun associateWithToPrimitives() {
         val expected = mapOf(1 to "one", 2 to "two", 3 to "three")
-        expect(
+        assertEquals(
             mapOf(1 to "one", 2 to "2", 3 to "3"),
-            { intArrayOf(2, 3).associateWithTo(expected.toMutableMap()) { it.toString() } }
+            intArrayOf(2, 3).associateWithTo(expected.toMutableMap()) { it.toString() }
         )
-        expect(
+        assertEquals(
             mapOf(1.toByte() to "one", 2.toByte() to "2", 3.toByte() to "3"),
-            { byteArrayOf(2, 3).associateWithTo(expected.mapKeys { it.key.toByte() }.toMutableMap()) { it.toString() } }
+            byteArrayOf(2, 3).associateWithTo(expected.mapKeys { it.key.toByte() }.toMutableMap()) { it.toString() }
         )
-        expect(
+        assertEquals(
             mapOf(1.toShort() to "one", 2.toShort() to "2", 3.toShort() to "3"),
-            { shortArrayOf(2, 3).associateWithTo(expected.mapKeys { it.key.toShort() }.toMutableMap()) { it.toString() } }
+            shortArrayOf(2, 3).associateWithTo(expected.mapKeys { it.key.toShort() }.toMutableMap()) { it.toString() }
         )
-        expect(
+        assertEquals(
             mapOf(1L to "one", 2L to "2", 3L to "3"),
-            { longArrayOf(2, 3).associateWithTo(expected.mapKeys { it.key.toLong() }.toMutableMap()) { it.toString() } }
+            longArrayOf(2, 3).associateWithTo(expected.mapKeys { it.key.toLong() }.toMutableMap()) { it.toString() }
         )
-        expect(
+        assertEquals(
             mapOf(1f to "one", 2f to "2", 3f to "3"),
-            {
-                floatArrayOf(2f, 3f).associateWithTo(expected.mapKeys { it.key.toFloat() }.toMutableMap()) {
-                    if (it == 1f) "1" else if (it == 2f) "2" else "3"
-                }
+            floatArrayOf(2f, 3f).associateWithTo(expected.mapKeys { it.key.toFloat() }.toMutableMap()) {
+                if (it == 1f) "1" else if (it == 2f) "2" else "3"
             }
         )
-        expect(
+        assertEquals(
             mapOf(1.0 to "one", 2.0 to "2", 3.0 to "3"),
-            {
-                doubleArrayOf(2.0, 3.0).associateWithTo(expected.mapKeys { it.key.toDouble() }.toMutableMap()) {
-                    if (it == 1.0) "1" else if (it == 2.0) "2" else "3"
-                }
+            doubleArrayOf(2.0, 3.0).associateWithTo(expected.mapKeys { it.key.toDouble() }.toMutableMap()) {
+                if (it == 1.0) "1" else if (it == 2.0) "2" else "3"
             }
         )
-        expect(
+        assertEquals(
             mapOf('1' to "one", '2' to "2", '3' to "3"),
-            { charArrayOf('2', '3').associateWithTo(expected.mapKeys { '0' + it.key }.toMutableMap()) { it.toString() } }
+            charArrayOf('2', '3').associateWithTo(expected.mapKeys { '0' + it.key }.toMutableMap()) { it.toString() }
         )
-        expect(
+        assertEquals(
             mapOf(false to "three", true to "true"),
-            { booleanArrayOf(true, true).associateWithTo(expected.mapKeys { it.key % 2 == 0 }.toMutableMap()) { it.toString() } }
+            booleanArrayOf(true, true).associateWithTo(expected.mapKeys { it.key % 2 == 0 }.toMutableMap()) { it.toString() }
         )
     }
 
