@@ -1,5 +1,4 @@
-// IGNORE_BACKEND: NATIVE
-// IGNORE_BACKEND: JS, JS_IR
+// TARGET_BACKEND: JVM
 // FILE: 1.kt
 package test
 

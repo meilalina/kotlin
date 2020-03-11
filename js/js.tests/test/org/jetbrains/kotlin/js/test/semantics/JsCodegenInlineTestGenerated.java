@@ -246,11 +246,6 @@ public class JsCodegenInlineTestGenerated extends AbstractJsCodegenInlineTest {
             runTest("compiler/testData/codegen/boxInline/anonymousObject/safeCall_2.kt");
         }
 
-        @TestMetadata("sam.kt")
-        public void testSam() throws Exception {
-            runTest("compiler/testData/codegen/boxInline/anonymousObject/sam.kt");
-        }
-
         @TestMetadata("superConstructorWithObjectParameter.kt")
         public void testSuperConstructorWithObjectParameter() throws Exception {
             runTest("compiler/testData/codegen/boxInline/anonymousObject/superConstructorWithObjectParameter.kt");
@@ -1663,11 +1658,6 @@ public class JsCodegenInlineTestGenerated extends AbstractJsCodegenInlineTest {
         public void testCaptureThisAndOuter() throws Exception {
             runTest("compiler/testData/codegen/boxInline/innerClasses/captureThisAndOuter.kt");
         }
-
-        @TestMetadata("innerLambda.kt")
-        public void testInnerLambda() throws Exception {
-            runTest("compiler/testData/codegen/boxInline/innerClasses/innerLambda.kt");
-        }
     }
 
     @TestMetadata("compiler/testData/codegen/boxInline/jvmPackageName")
@@ -2657,11 +2647,6 @@ public class JsCodegenInlineTestGenerated extends AbstractJsCodegenInlineTest {
             @TestMetadata("simpleSafe.kt")
             public void testSimpleSafe() throws Exception {
                 runTest("compiler/testData/codegen/boxInline/reified/checkCast/simpleSafe.kt");
-            }
-
-            @TestMetadata("simple_1_3.kt")
-            public void testSimple_1_3() throws Exception {
-                runTest("compiler/testData/codegen/boxInline/reified/checkCast/simple_1_3.kt");
             }
         }
 

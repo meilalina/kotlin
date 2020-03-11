@@ -1,7 +1,5 @@
 // !API_VERSION: 1.3
-// TODO: Reified generics required some design to unify behavior across all backends
-// K/JS doesn't have TypeCastException
-// IGNORE_BACKEND: JS, JS_IR
+// TARGET_BACKEND: JVM
 // FILE: 1.kt
 // WITH_RUNTIME
 package test

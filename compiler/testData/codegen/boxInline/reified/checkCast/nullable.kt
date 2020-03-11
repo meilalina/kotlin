@@ -1,6 +1,5 @@
 // TODO: Reified generics required some design to unify behavior across all backends
-// K/JS doesn't have TypeCastException
-// IGNORE_BACKEND: JS, JS_IR
+// IGNORE_BACKEND: JS_IR
 // FILE: 1.kt
 // WITH_RUNTIME
 package test
@@ -37,21 +36,9 @@ fun box(): String {
     return "OK"
 }
 
-inline fun failTypeCast(s: () -> Unit) {
-    try {
-        s()
-    }
-    catch (e: TypeCastException) {
-
-    }
-}
-
 inline fun failClassCast(s: () -> Unit) {
     try {
         s()
-    }
-    catch (e: TypeCastException) {
-        throw e
     }
     catch (e: ClassCastException) {
 
