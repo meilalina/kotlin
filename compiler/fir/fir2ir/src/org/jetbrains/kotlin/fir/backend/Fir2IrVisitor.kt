@@ -84,12 +84,72 @@ class Fir2IrVisitor(
         TODO("Should not be here: ${element.render()}")
     }
 
-    fun registerFile(file: FirFile) {
+    fun registerFileAndClasses(file: FirFile) {
         val irFile = IrFileImpl(
             sourceManager.getOrCreateFileEntry(file.psi as KtFile),
             moduleDescriptor.getPackage(file.packageFqName).fragments.first()
         )
         declarationStorage.registerFile(file, irFile)
+        file.declarations.forEach {
+            if (it is FirRegularClass) {
+                registerClassAndNestedClasses(it)
+            }
+        }
+    }
+
+    fun processClassHeaders(file: FirFile) {
+        file.declarations.forEach {
+            if (it is FirRegularClass) {
+                processClassAndNestedClassHeaders(it)
+            }
+        }
+    }
+
+    fun processFileAndClassMembers(file: FirFile) {
+        file.declarations.processMembers(declarationStorage.getIrFile(file))
+    }
+
+    private fun registerClassAndNestedClasses(regularClass: FirRegularClass) {
+        declarationStorage.registerIrClass(regularClass)
+        regularClass.declarations.forEach {
+            if (it is FirRegularClass) {
+                registerClassAndNestedClasses(it)
+            }
+        }
+    }
+
+    private fun processClassAndNestedClassHeaders(regularClass: FirRegularClass) {
+        declarationStorage.processClassHeader(regularClass)
+        regularClass.declarations.forEach {
+            if (it is FirRegularClass) {
+                processClassAndNestedClassHeaders(it)
+            }
+        }
+    }
+
+    private fun List<FirDeclaration>.processMembers(parent: IrDeclarationParent) {
+        for (declaration in this) {
+            when (declaration) {
+                is FirRegularClass -> {
+                    declaration.declarations.processMembers(declarationStorage.getCachedIrClass(declaration)!!)
+                }
+                is FirSimpleFunction -> {
+                    declarationStorage.createIrFunction(declaration, parent)
+                }
+                is FirProperty -> {
+                    declarationStorage.createIrProperty(declaration, parent)
+                }
+                is FirConstructor -> {
+                    declarationStorage.createIrConstructor(declaration, parent)
+                }
+                is FirAnonymousInitializer, is FirTypeAlias -> {
+                    // DO NOTHING
+                }
+                else -> {
+                    throw AssertionError("Unexpected member: ${declaration::class}")
+                }
+            }
+        }
     }
 
     override fun visitFile(file: FirFile, data: Any?): IrFile {

@@ -38,7 +38,13 @@ object Fir2IrConverter {
         val fir2irVisitor = Fir2IrVisitor(session, moduleDescriptor, symbolTable, sourceManager, builtIns, fakeOverrideMode)
         val irFiles = mutableListOf<IrFile>()
         for (firFile in firFiles) {
-            fir2irVisitor.registerFile(firFile)
+            fir2irVisitor.registerFileAndClasses(firFile)
+        }
+        for (firFile in firFiles) {
+            fir2irVisitor.processClassHeaders(firFile)
+        }
+        for (firFile in firFiles) {
+            fir2irVisitor.processFileAndClassMembers(firFile)
         }
         for (firFile in firFiles) {
             val irFile = firFile.accept(fir2irVisitor, null) as IrFile

@@ -228,7 +228,7 @@ class Fir2IrDeclarationStorage(
         }
     }
 
-    private fun getCachedIrClass(klass: FirClass<*>): IrClass? {
+    fun getCachedIrClass(klass: FirClass<*>): IrClass? {
         return if (klass is FirAnonymousObject || klass is FirRegularClass && klass.visibility == Visibilities.LOCAL) {
             localStorage.getLocalClass(klass)
         } else {
@@ -256,18 +256,29 @@ class Fir2IrDeclarationStorage(
             return createIrAnonymousObject(klass)
         }
         val regularClass = klass as FirRegularClass
-
-        val descriptor = WrappedClassDescriptor()
         val origin =
             if (exactlySourceClass || firProvider.getFirClassifierContainerFileIfAny(klass.symbol) != null) IrDeclarationOrigin.DEFINED
             else IrDeclarationOrigin.IR_EXTERNAL_DECLARATION_STUB
+        val irClass = registerIrClass(regularClass, origin)
+        processClassHeader(regularClass, irClass)
+        return irClass
+    }
+
+    fun processClassHeader(regularClass: FirRegularClass, irClass: IrClass = getCachedIrClass(regularClass)!!): IrClass {
+        irClass.declareSupertypesAndTypeParameters(regularClass)
+        irClass.setThisReceiver()
+        return irClass
+    }
+
+    fun registerIrClass(regularClass: FirRegularClass, origin: IrDeclarationOrigin = IrDeclarationOrigin.DEFINED): IrClass {
+        val descriptor = WrappedClassDescriptor()
         val visibility = regularClass.visibility
         val modality = if (regularClass.classKind == ClassKind.ENUM_CLASS) {
             regularClass.enumClassModality()
         } else {
             regularClass.modality ?: Modality.FINAL
         }
-        val irClass = klass.convertWithOffsets { startOffset, endOffset ->
+        val irClass = regularClass.convertWithOffsets { startOffset, endOffset ->
             irSymbolTable.declareClass(startOffset, endOffset, origin, descriptor, modality, visibility) { symbol ->
                 IrClassImpl(
                     startOffset,
@@ -275,7 +286,7 @@ class Fir2IrDeclarationStorage(
                     origin,
                     symbol,
                     regularClass.name,
-                    klass.classKind,
+                    regularClass.classKind,
                     visibility,
                     modality,
                     isCompanion = regularClass.isCompanion,
@@ -291,12 +302,10 @@ class Fir2IrDeclarationStorage(
             }
         }
         if (regularClass.visibility == Visibilities.LOCAL) {
-            localStorage.putLocalClass(klass, irClass)
+            localStorage.putLocalClass(regularClass, irClass)
         } else {
-            classCache[klass] = irClass
+            classCache[regularClass] = irClass
         }
-        irClass.declareSupertypesAndTypeParameters(klass)
-        irClass.setThisReceiver()
         return irClass
     }
 
@@ -552,7 +561,7 @@ class Fir2IrDeclarationStorage(
         }
     }
 
-    private fun createIrFunction(
+    fun createIrFunction(
         function: FirFunction<*>,
         irParent: IrDeclarationParent?,
         shouldLeaveScope: Boolean = true,
@@ -624,7 +633,7 @@ class Fir2IrDeclarationStorage(
         return constructorCache[constructor]
     }
 
-    private fun createIrConstructor(
+    fun createIrConstructor(
         constructor: FirConstructor,
         irParent: IrDeclarationParent,
         shouldLeaveScope: Boolean = true,
@@ -763,7 +772,7 @@ class Fir2IrDeclarationStorage(
         }
     }
 
-    private fun createIrProperty(
+    fun createIrProperty(
         property: FirProperty,
         irParent: IrDeclarationParent?,
         origin: IrDeclarationOrigin = IrDeclarationOrigin.DEFINED,
@@ -961,6 +970,7 @@ class Fir2IrDeclarationStorage(
     fun getIrClassSymbol(firClassSymbol: FirClassSymbol<*>): IrClassSymbol {
         val firClass = firClassSymbol.fir
         getCachedIrClass(firClass)?.let { return irSymbolTable.referenceClass(it.descriptor) }
+        // TODO: remove all this code and change to unbound symbol creation
         val irClass = createIrClass(firClass)
         if (firClass is FirAnonymousObject || firClass is FirRegularClass && firClass.visibility == Visibilities.LOCAL) {
             return irSymbolTable.referenceClass(irClass.descriptor)
@@ -982,6 +992,7 @@ class Fir2IrDeclarationStorage(
         firTypeParameterSymbol: FirTypeParameterSymbol,
         typeContext: ConversionTypeContext
     ): IrTypeParameterSymbol {
+        // TODO: use cached type parameter here
         val irTypeParameter = getIrTypeParameter(firTypeParameterSymbol.fir, typeContext = typeContext)
         return irSymbolTable.referenceTypeParameter(irTypeParameter.descriptor)
     }
