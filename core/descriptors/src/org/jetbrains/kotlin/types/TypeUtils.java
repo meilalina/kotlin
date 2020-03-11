@@ -25,6 +25,7 @@ import org.jetbrains.kotlin.types.checker.KotlinTypeChecker;
 import org.jetbrains.kotlin.types.checker.KotlinTypeRefiner;
 import org.jetbrains.kotlin.types.checker.NewTypeVariableConstructor;
 import org.jetbrains.kotlin.types.refinement.TypeRefinement;
+import org.jetbrains.kotlin.types.typeUtil.TypeUtilsKt;
 
 import java.util.*;
 
@@ -540,7 +541,14 @@ public class TypeUtils {
             return literalTypeConstructor.getApproximatedType();
         }
 
-        // If approximated type does not mathc expected type then expected type is very
+        // Coerce literals only to PrimitiveType or to Comparable<PrimitiveType>
+        if (!TypeUtilsKt.isSignedOrUnsignedNumberType(expectedType) &&
+            !isComparableWithArgumentOfPrimitiveType(expectedType)
+        ) {
+            return literalTypeConstructor.getApproximatedType();
+        }
+
+        // If approximated type does not match expected type then expected type is very
         //  specific type (e.g. Comparable<Byte>), so only one of possible types could match it
         KotlinType approximatedType = literalTypeConstructor.getApproximatedType();
         if (KotlinTypeChecker.DEFAULT.isSubtypeOf(approximatedType, expectedType)) {
@@ -553,6 +561,15 @@ public class TypeUtils {
             }
         }
         return literalTypeConstructor.getApproximatedType();
+    }
+
+    private static boolean isComparableWithArgumentOfPrimitiveType(@NotNull KotlinType type) {
+        if (!KotlinBuiltIns.isComparable(type)) return false;
+        List<TypeProjection> arguments = type.getArguments();
+        if (arguments.size() != 1) return false;
+
+        KotlinType argumentType = arguments.get(0).getType();
+        return TypeUtilsKt.isSignedOrUnsignedNumberType(argumentType);
     }
 
     public static boolean isTypeParameter(@NotNull KotlinType type) {
