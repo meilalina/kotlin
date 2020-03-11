@@ -10,6 +10,8 @@ import com.intellij.openapi.components.ServiceManager
 import com.intellij.openapi.components.State
 import com.intellij.openapi.components.Storage
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.project.guessProjectDir
+import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.util.addOptionTag
 import com.intellij.util.attribute
 import com.intellij.util.getAttributeBooleanValue
@@ -20,7 +22,7 @@ import org.jetbrains.kotlin.scripting.definitions.ScriptDefinition
     name = "KotlinScriptingSettings",
     storages = [Storage("kotlinScripting.xml")]
 )
-class KotlinScriptingSettings : PersistentStateComponent<Element> {
+class KotlinScriptingSettings(private val project: Project) : PersistentStateComponent<Element> {
     var isAutoReloadEnabled = false
 
     /**
@@ -29,6 +31,7 @@ class KotlinScriptingSettings : PersistentStateComponent<Element> {
     var suppressDefinitionsCheck = false
 
     private var scriptDefinitions = linkedMapOf<KotlinScriptDefinitionKey, KotlinScriptDefinitionValue>()
+    private var externalScripts = linkedSetOf<String>()
 
     override fun getState(): Element {
         val definitionsRootElement = Element("KotlinScriptingSettings")
@@ -47,12 +50,18 @@ class KotlinScriptingSettings : PersistentStateComponent<Element> {
             )
         }
 
-        if (scriptDefinitions.isEmpty()) {
-            return definitionsRootElement
+        if (scriptDefinitions.isNotEmpty()) {
+            for (scriptDefinition in scriptDefinitions) {
+                definitionsRootElement.addScriptDefinitionContentElement(scriptDefinition.key, scriptDefinition.value)
+            }
         }
 
-        for (scriptDefinition in scriptDefinitions) {
-            definitionsRootElement.addScriptDefinitionContentElement(scriptDefinition.key, scriptDefinition.value)
+        if (externalScripts.isNotEmpty()) {
+            for (externalScript in externalScripts) {
+                definitionsRootElement.addElement(EXTERNAL_SCRIPT_TAG).apply {
+                    setAttribute("path", externalScript)
+                }
+            }
         }
 
         return definitionsRootElement
@@ -69,6 +78,11 @@ class KotlinScriptingSettings : PersistentStateComponent<Element> {
         val scriptDefinitionsList = state.getChildren(SCRIPT_DEFINITION_TAG)
         for (scriptDefinitionElement in scriptDefinitionsList) {
             scriptDefinitions[scriptDefinitionElement.toKey()] = scriptDefinitionElement.toValue()
+        }
+
+        val externalScriptsList = state.getChildren(EXTERNAL_SCRIPT_TAG)
+        for (externalScriptElement in externalScriptsList) {
+            externalScripts.add(externalScriptElement.getAttributeValue("path"))
         }
     }
 
@@ -89,6 +103,24 @@ class KotlinScriptingSettings : PersistentStateComponent<Element> {
 
     fun isScriptDefinitionEnabled(scriptDefinition: ScriptDefinition): Boolean {
         return scriptDefinitions[scriptDefinition.toKey()]?.isEnabled ?: true
+    }
+
+    fun addExternalScript(file: VirtualFile) {
+        externalScripts.add(file.path)
+    }
+
+    fun isExternalScript(file: VirtualFile): Boolean {
+        return externalScripts.contains(file.path)
+    }
+
+    fun isExternalScript(path: String): Boolean {
+        if (externalScripts.contains(path)) return true
+
+        return externalScripts.contains(path)
+    }
+
+    fun allExternalScripts(): Set<String> {
+        return externalScripts
     }
 
     private data class KotlinScriptDefinitionKey(val definitionName: String, val className: String)
@@ -140,6 +172,7 @@ class KotlinScriptingSettings : PersistentStateComponent<Element> {
             ServiceManager.getService(project, KotlinScriptingSettings::class.java)
 
         private const val SCRIPT_DEFINITION_TAG = "scriptDefinition"
+        private const val EXTERNAL_SCRIPT_TAG = "externalScript"
 
     }
 }

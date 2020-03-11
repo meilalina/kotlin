@@ -200,21 +200,6 @@ internal class DefaultScriptConfigurationManager(project: Project) :
         }
     }
 
-    override fun forceReloadConfiguration(file: KtFile, loader: ScriptConfigurationLoader) {
-        val virtualFile = file.originalFile.virtualFile ?: return
-
-        if (!ScriptDefinitionsManager.getInstance(project).isReady()) return
-        val scriptDefinition = file.findScriptDefinition() ?: return
-
-        if (!loader.shouldRunInBackground(scriptDefinition)) {
-            loader.loadDependencies(false, file, scriptDefinition, loadingContext)
-        } else {
-            backgroundExecutor.ensureScheduled(virtualFile) {
-                loader.loadDependencies(false, file, scriptDefinition, loadingContext)
-            }
-        }
-    }
-
     /**
      * Save configurations into cache.
      * Start indexing for new class/source roots.

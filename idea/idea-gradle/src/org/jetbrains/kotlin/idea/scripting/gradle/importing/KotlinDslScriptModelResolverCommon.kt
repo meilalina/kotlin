@@ -8,10 +8,14 @@ package org.jetbrains.kotlin.idea.scripting.gradle.importing
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.externalSystem.model.DataNode
 import com.intellij.openapi.externalSystem.model.project.ProjectData
+import com.intellij.openapi.project.Project
+import com.intellij.openapi.project.ProjectManager
 import com.intellij.openapi.util.Pair
 import org.gradle.tooling.model.kotlin.dsl.EditorReportSeverity
 import org.gradle.tooling.model.kotlin.dsl.KotlinDslModelsParameters.*
 import org.gradle.tooling.model.kotlin.dsl.KotlinDslScriptsModel
+import org.gradle.tooling.model.kotlin.dsl.KotlinDslScriptsModel.SCRIPTS_GRADLE_PROPERTY_NAME
+import org.jetbrains.kotlin.idea.scripting.gradle.collectGradleScripts
 import org.jetbrains.plugins.gradle.service.project.AbstractProjectResolverExtension
 
 internal val LOG = Logger.getInstance(KotlinDslScriptModelResolverCommon::class.java)
@@ -31,7 +35,23 @@ abstract class KotlinDslScriptModelResolverCommon : AbstractProjectResolverExten
     }
 
     override fun getExtraCommandLineArgs(): List<String> {
-        return listOf("-P$CORRELATION_ID_GRADLE_PROPERTY_NAME=${System.nanoTime()}")
+        val extra = arrayListOf("-P$CORRELATION_ID_GRADLE_PROPERTY_NAME=${System.nanoTime()}")
+        val project = findProject()
+        if (project != null) {
+            extra.add("-P$SCRIPTS_GRADLE_PROPERTY_NAME=${collectGradleScripts(project).joinToString("|")}")
+        }
+
+        return extra
+    }
+
+    private fun findProject(): Project? {
+        val projectPath = resolverCtx.projectPath
+        if (projectPath.isNotBlank()) {
+            return ProjectManager.getInstance().openProjects.find {
+                it.basePath == projectPath
+            }
+        }
+        return null
     }
 
     @Suppress("unused")

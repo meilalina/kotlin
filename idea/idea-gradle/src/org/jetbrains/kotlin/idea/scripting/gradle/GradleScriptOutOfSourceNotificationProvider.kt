@@ -13,7 +13,7 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.ui.EditorNotificationPanel
 import com.intellij.ui.EditorNotifications
 import org.jetbrains.kotlin.idea.KotlinFileType
-import org.jetbrains.kotlin.idea.core.script.ScriptConfigurationManager
+import org.jetbrains.kotlin.idea.core.script.settings.KotlinScriptingSettings
 
 class GradleScriptOutOfSourceNotificationProvider(private val project: Project) : EditorNotifications.Provider<EditorNotificationPanel>() {
     override fun getKey(): Key<EditorNotificationPanel> = KEY
@@ -26,8 +26,9 @@ class GradleScriptOutOfSourceNotificationProvider(private val project: Project) 
 
         return EditorNotificationPanel().apply {
             text("The associated Gradle Project isn't imported.")
-            createActionLabel("Load script configuration") {
-                ScriptConfigurationManager.getInstance(project).forceReloadConfiguration(file, loaderForOutOfProjectScripts)
+            createActionLabel("Add as external script") {
+                KotlinScriptingSettings.getInstance(project).addExternalScript(file)
+                EditorNotifications.getInstance(project).updateAllNotifications()
             }
             val link = createActionLabel("") {}
             link.setIcon(AllIcons.General.ContextHelp)
@@ -36,10 +37,6 @@ class GradleScriptOutOfSourceNotificationProvider(private val project: Project) 
                     "You can import the related Gradle project or click \"Load script configuration\" " +
                     "to get code insight without importing."
         }
-    }
-
-    private val loaderForOutOfProjectScripts by lazy {
-        GradleScriptConfigurationLoaderForOutOfProjectScripts(project)
     }
 
     companion object {

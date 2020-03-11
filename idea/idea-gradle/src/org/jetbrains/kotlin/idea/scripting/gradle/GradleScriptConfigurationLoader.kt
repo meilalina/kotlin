@@ -19,30 +19,6 @@ import org.jetbrains.kotlin.idea.util.application.runWriteAction
 import org.jetbrains.kotlin.psi.KtFile
 import org.jetbrains.kotlin.scripting.definitions.ScriptDefinition
 
-class GradleScriptConfigurationLoaderForOutOfProjectScripts(project: Project) : DefaultScriptConfigurationLoader(project) {
-    override fun loadDependencies(
-        isFirstLoad: Boolean,
-        ktFile: KtFile,
-        scriptDefinition: ScriptDefinition,
-        context: ScriptConfigurationLoadingContext
-    ): Boolean {
-        val vFile = ktFile.originalFile.virtualFile
-
-        // Gradle read files from FS
-        GlobalScope.launch(EDT(project)) {
-            runWriteAction {
-                FileDocumentManager.getInstance().saveAllDocuments()
-            }
-        }
-
-        val result = getConfigurationThroughScriptingApi(ktFile, vFile, scriptDefinition)
-
-        context.saveNewConfiguration(vFile, result)
-
-        return true
-    }
-}
-
 class GradleScriptConfigurationLoader(project: Project) : DefaultScriptConfigurationLoader(project) {
     override fun shouldRunInBackground(scriptDefinition: ScriptDefinition): Boolean {
         return if (useScriptConfigurationFromImportOnly()) false else super.shouldRunInBackground(scriptDefinition)

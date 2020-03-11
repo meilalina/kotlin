@@ -13,6 +13,7 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.*
 import com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.gradle.util.GradleVersion
+import org.jetbrains.kotlin.idea.core.script.settings.KotlinScriptingSettings
 import org.jetbrains.kotlin.idea.util.application.runReadAction
 import org.jetbrains.kotlin.psi.KtCallExpression
 import org.jetbrains.kotlin.psi.KtFile
@@ -20,6 +21,7 @@ import org.jetbrains.kotlin.psi.KtScriptInitializer
 import org.jetbrains.kotlin.psi.psiUtil.getChildrenOfType
 import org.jetbrains.plugins.gradle.settings.GradleProjectSettings
 import org.jetbrains.plugins.gradle.util.GradleConstants
+import java.io.File
 
 private val sections = arrayListOf("buildscript", "plugins", "initscript", "pluginManagement")
 
@@ -34,7 +36,11 @@ fun isInAffectedGradleProjectFiles(project: Project, filePath: String): Boolean 
             return true
         }
 
-        return filePath.substringBeforeLast("/") in getGradleProjectsRoots(project)
+        if (filePath.substringBeforeLast("/") in getGradleProjectsRoots(project)) {
+            return true
+        }
+
+        return KotlinScriptingSettings.getInstance(project).isExternalScript(filePath)
     }
 
     return false
@@ -61,6 +67,27 @@ private fun computeGradleProjectRoots(project: Project): Set<String> {
         ?: return setOf()
 
     return projectSettings.modules.takeIf { it.isNotEmpty() } ?: setOf(projectSettings.externalProjectPath)
+}
+
+fun collectGradleScripts(project: Project): Set<String> {
+    val roots = getGradleProjectsRoots(project)
+
+    val result = hashSetOf<String>()
+    for (root in roots) {
+        val bs = File(root, "build.gradle.kts")
+        if (bs.exists()) {
+            result.add(bs.absolutePath)
+        }
+
+        val ss = File(root, "settings.gradle.kts")
+        if (ss.exists()) {
+            result.add(ss.absolutePath)
+        }
+    }
+
+    result.addAll(KotlinScriptingSettings.getInstance(project).allExternalScripts())
+
+    return result
 }
 
 fun getGradleScriptInputsStamp(

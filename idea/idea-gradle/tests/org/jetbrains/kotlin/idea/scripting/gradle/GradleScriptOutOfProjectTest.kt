@@ -6,6 +6,7 @@
 package org.jetbrains.kotlin.idea.scripting.gradle
 
 import org.jetbrains.kotlin.idea.core.script.ScriptConfigurationManager
+import org.jetbrains.kotlin.idea.core.script.settings.KotlinScriptingSettings
 import org.jetbrains.kotlin.idea.script.AbstractScriptConfigurationLoadingTest
 import org.jetbrains.kotlin.psi.KtFile
 import org.jetbrains.plugins.gradle.util.GradleConstants
@@ -30,35 +31,31 @@ class GradleScriptOutOfProjectTest : AbstractScriptConfigurationLoadingTest() {
         testAffectedGradleProjectFiles = false
     }
 
-    private val loaderForOutOfProjectScripts by lazy {
-        GradleScriptConfigurationLoaderForOutOfProjectScripts(project)
-    }
-
     fun testManualLoadingForUpToDate() {
-        assertConfigurationShouldBeLoadedManually()
+        assertConfigurationIsNotLoaded()
 
-        scriptConfigurationManager.forceReloadConfiguration(myFile.virtualFile, loaderForOutOfProjectScripts)
+        KotlinScriptingSettings.getInstance(project).addExternalScript(myFile.virtualFile)
 
         assertConfigurationWasLoaded()
     }
 
     fun testManualLoadingForOutOfDate() {
-        assertConfigurationShouldBeLoadedManually()
+        assertConfigurationIsNotLoaded()
 
         makeChangesInsideSections()
 
         assertNoBackgroundTasks()
         assertNoLoading()
 
-        scriptConfigurationManager.forceReloadConfiguration(myFile.virtualFile, loaderForOutOfProjectScripts)
+        KotlinScriptingSettings.getInstance(project).addExternalScript(myFile.virtualFile)
 
         assertConfigurationWasLoaded()
     }
 
     fun testFileAttributesForManualLoading() {
-        assertConfigurationShouldBeLoadedManually()
+        assertConfigurationIsNotLoaded()
 
-        scriptConfigurationManager.forceReloadConfiguration(myFile.virtualFile, loaderForOutOfProjectScripts)
+        KotlinScriptingSettings.getInstance(project).addExternalScript(myFile.virtualFile)
 
         assertConfigurationWasLoaded()
 
@@ -68,14 +65,14 @@ class GradleScriptOutOfProjectTest : AbstractScriptConfigurationLoadingTest() {
     }
 
     fun testNoNotificationAfterForReload() {
-        assertConfigurationShouldBeLoadedManually()
+        assertConfigurationIsNotLoaded()
 
-        scriptConfigurationManager.forceReloadConfiguration(myFile.virtualFile, loaderForOutOfProjectScripts)
+        KotlinScriptingSettings.getInstance(project).addExternalScript(myFile.virtualFile)
         assertConfigurationWasLoaded()
 
         makeChangesInsideSections()
 
-        scriptConfigurationManager.forceReloadConfiguration(myFile.virtualFile, loaderForOutOfProjectScripts)
+        KotlinScriptingSettings.getInstance(project).addExternalScript(myFile.virtualFile)
         assertConfigurationWasLoaded()
 
     }
@@ -84,7 +81,7 @@ class GradleScriptOutOfProjectTest : AbstractScriptConfigurationLoadingTest() {
         changeContents(myFile.text.replace(GradleScriptInputsWatcherTest.insidePlaceholder, "application"), myFile)
     }
 
-    private fun assertConfigurationShouldBeLoadedManually() {
+    private fun assertConfigurationIsNotLoaded() {
         assertNull(getConfiguration())
         assertAndDoAllBackgroundTasks()
         assertNoLoading()

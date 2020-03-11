@@ -73,12 +73,6 @@ interface ScriptConfigurationManager {
      */
     fun getConfiguration(file: KtFile): ScriptCompilationConfigurationWrapper?
 
-    /**
-     * Reload the configuration for [file] even it is already loaded.
-     * [loader] is used to load configuration. Other loaders aren't taken into account.
-     */
-    fun forceReloadConfiguration(file: VirtualFile, loader: ScriptConfigurationLoader): ScriptCompilationConfigurationWrapper?
-
     @Deprecated("Use getScriptClasspath(KtFile) instead")
     fun getScriptClasspath(file: VirtualFile): List<VirtualFile>
 
