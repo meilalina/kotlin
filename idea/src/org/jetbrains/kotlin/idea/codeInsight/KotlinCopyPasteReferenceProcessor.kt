@@ -553,7 +553,7 @@ class KotlinCopyPasteReferenceProcessor : CopyPastePostProcessor<BasicKotlinRefe
     ): List<ReferenceToRestoreData> {
         val ktFile = file as? KtFile ?: return listOf()
 
-        val resolutionFacade = ktFile.getResolutionFacade()
+        val resolutionFacade = runReadAction { ktFile.getResolutionFacade() }
         val referencesList = mutableListOf<Pair<KotlinReferenceData, KtReference?>>()
         val bindingContext =
             try {
@@ -570,7 +570,7 @@ class KotlinCopyPasteReferenceProcessor : CopyPastePostProcessor<BasicKotlinRefe
                 return emptyList()
             }
 
-        val fileResolutionScope = resolutionFacade.getFileResolutionScope(ktFile)
+        val fileResolutionScope = runReadAction { resolutionFacade.getFileResolutionScope(ktFile) }
         return referencesList.mapNotNull { pair ->
             val data = pair.first
             val reference = pair.second
@@ -582,19 +582,19 @@ class KotlinCopyPasteReferenceProcessor : CopyPastePostProcessor<BasicKotlinRefe
         findReference(file, TextRange(data.startOffset + blockStart, data.endOffset + blockStart))
 
     private fun findReference(file: KtFile, desiredRange: TextRange): KtReference? {
-        val element = file.findElementAt(desiredRange.startOffset) ?: return null
+        val element = runReadAction { file.findElementAt(desiredRange.startOffset) } ?: return null
         return findReference(element, desiredRange)
     }
 
-    private fun findReference(element: PsiElement, desiredRange: TextRange): KtReference? {
+    private fun findReference(element: PsiElement, desiredRange: TextRange): KtReference? = runReadAction {
         for (current in element.parentsWithSelf) {
             val range = current.range
             if (current is KtElement && range == desiredRange) {
-                current.mainReference?.let { return it }
+                current.mainReference?.let { return@runReadAction it }
             }
-            if (range !in desiredRange) return null
+            if (range !in desiredRange) return@runReadAction null
         }
-        return null
+        return@runReadAction null
     }
 
     private fun createReferenceToRestoreData(
