@@ -65,6 +65,33 @@ class ConsoleTest {
     }
 
     @Test
+    fun shouldReadAllSupportedEncodings() {
+        val lines = listOf(
+            "ONE", "TWICE", "", "0123456", 
+            "This is a very long line that will overflow buffers that are allocated in the code of LineReader object",
+            "This line is quite short",
+            "x".repeat(1000), // stress
+            "7", "8", "9" // some short stuff at the end
+        )
+        for (charset: Charset in Charset.availableCharsets().values) {
+            if (charset.newDecoder().maxCharsPerByte() > 1) continue // not supported by readLine, skip
+            try {
+                charset.newEncoder()
+            } catch (e: UnsupportedOperationException) {
+                continue // we can only test charset that supports encoding, skip
+            }
+            for (separator in listOf(linuxLineSeparator, windowsLineSeparator)) {
+                val text = lines.joinToString(separator)
+                val reference = readLinesReference(text, charset)
+                if (reference != lines) continue // this encoding does not support ASCII chars that we test, skip
+                // Now we can test readLine function
+                val actual = readLines(text, charset)
+                assertEquals(lines, actual, "Comparing with $charset")
+            }
+        }
+    }
+
+    @Test
     fun readSurrogatePairs() {
         val c = "\uD83D\uDC4D" // thumb-up emoji
         testReadLine("$c$linuxLineSeparator", listOf(c))
@@ -76,17 +103,15 @@ class ConsoleTest {
 
     private fun testReadLine(text: String, expected: List<String>, charset: Charset = Charsets.UTF_8) {
         val actual = readLines(text, charset)
-        assertEquals(expected, actual)
+        assertEquals(expected, actual, "Comparing with $charset")
         val referenceExpected = readLinesReference(text, charset)
         assertEquals(referenceExpected, actual, "Comparing to reference readLine")
-
     }
 
     private fun readLines(text: String, charset: Charset): List<String> {
         text.byteInputStream(charset).use { stream ->
-            val decoder = charset.newDecoder()
             @Suppress("INVISIBLE_REFERENCE", "INVISIBLE_MEMBER")
-            return generateSequence { readLine(stream, decoder) }.toList().also {
+            return generateSequence { LineReader.readLine(stream, charset) }.toList().also {
                 assertTrue("All bytes should be read") { stream.read() == -1 }
             }
         }
